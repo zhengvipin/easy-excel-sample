@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Export</title>
+</head>
+<body>
+<button type="button" id="btn">点击下载excel</button>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    const filename = "用户信息表.xls";
+
+    window.onload = function () {
+        const oBtn = document.getElementById('btn');
+        oBtn.onclick = requestByAxios;
+    };
+
+    // 1.通过axios处理流数据
+    function requestByAxios() {
+        axios({
+            method: 'post',
+            url: 'http://localhost:8080/user/export',
+            params: {filename: filename},
+            responseType: 'blob',
+        }).then(function (rep) {
+            const data = rep.data;
+            const blob = new Blob([data]);
+            const blobUrl = window.URL.createObjectURL(blob);
+            download(blobUrl);
+        })
+    }
+
+    // 2.通过原生XMLHttpRequest请求流数据
+    function requestByXmlRequest() {
+        const req = new XMLHttpRequest();
+        req.open('POST', 'http://localhost:8080/user/export', true);
+        req.responseType = 'blob';
+        req.onload = function () {
+            const data = req.response;
+            const blob = new Blob([data]);
+            const blobUrl = window.URL.createObjectURL(blob);
+            download(blobUrl);
+        };
+        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        req.send('filename=' + filename);
+    }
+
+    // ！！！注意：jQuery的ajax返回数据格式里面没有blob
+
+    function download(blobUrl) {
+        // 创建隐藏的可下载链接
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.download = filename;
+        a.href = blobUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+</script>
+</html>
