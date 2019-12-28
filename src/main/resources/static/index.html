@@ -10,7 +10,7 @@
 <body>
 <button type="button" id="btn">点击下载excel</button>
 </body>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./axios.min.js"></script>
 <script>
     const filename = "用户信息表.xls";
 
@@ -30,7 +30,8 @@
             const data = rep.data;
             const blob = new Blob([data]);
             const blobUrl = window.URL.createObjectURL(blob);
-            download(blobUrl);
+            const filename = decodeURI(rep.headers["content-disposition"].split(";")[1].split("filename=")[1]);
+            download(blobUrl, filename);
         })
     }
 
@@ -51,12 +52,12 @@
 
     // ！！！注意：jQuery的ajax返回数据格式里面没有blob
 
-    function download(blobUrl) {
+    function download(url, filename) {
         // 创建隐藏的可下载链接
         const a = document.createElement('a');
         a.style.display = 'none';
         a.download = filename;
-        a.href = blobUrl;
+        a.href = url;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

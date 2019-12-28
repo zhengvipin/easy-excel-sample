@@ -1,4 +1,4 @@
-package com.catt.easy.excel.util;
+package com.catt.easy.excel.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.CharEncoding;
@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * <p>
@@ -28,6 +30,11 @@ public class EasyExcelUtil {
             log.error("下载文件名不能为空！");
             throw new NullPointerException("下载文件名为空！");
         }
+
+        // 文件名处理
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        filename = filename.matches("^.*?\\.(?:xls)x?$") ? filename : filename + ".xls";
+        filename = filename.split("\\.")[0] + sdf.format(new Date()) + "." + filename.split("\\.")[1];
 
         try {
             filename = URLEncoder.encode(filename, CharEncoding.UTF_8);

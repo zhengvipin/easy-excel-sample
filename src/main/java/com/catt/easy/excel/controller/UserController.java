@@ -2,7 +2,7 @@ package com.catt.easy.excel.controller;
 
 import com.alibaba.excel.EasyExcel;
 import com.catt.easy.excel.entity.User;
-import com.catt.easy.excel.util.EasyExcelUtil;
+import com.catt.easy.excel.utils.EasyExcelUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,13 +33,15 @@ public class UserController {
      */
     @PostMapping("/export")
     public void exportExcel(@RequestParam("filename") String filename,
-                            HttpServletResponse response) throws IOException {
+                            HttpServletResponse response) {
 
+        // 查询数据
         List<User> data = new ArrayList<>();
         data.add(new User(1, "张三", "男", "教师", "广州"));
         data.add(new User(2, "李四", "女", "记者", "上海"));
         data.add(new User(3, "王五", "男", "学生", "北京"));
 
+        // 文件下载
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         EasyExcel.write(bos, User.class).autoCloseStream(Boolean.FALSE).sheet("用户").doWrite(data);
         EasyExcelUtil.downloadFile(filename, bos, response);
